@@ -1,0 +1,33 @@
+
+import math
+
+def valid_cluster_sizes(limit=20):
+    return sorted({
+        i*i + i*j + j*j
+        for i in range(5)
+        for j in range(5)
+    } - {0})[:limit]
+
+def reuse_metrics(N, S=336, M=21, n=4.0):
+    k = S // N
+    q = math.sqrt(3 * N)
+    si_db = 10 * math.log10(q ** n / 6)
+    return k, M * k, q, si_db
+
+S, M, n, req = 336, 21, 4.0, 18.0
+
+print("N   D/R   Ch/Cell   Capacity   S/I(dB)")
+
+best = None
+
+for N in valid_cluster_sizes(10):
+    k, C, q, si = reuse_metrics(N, S, M, n)
+    ok = si >= req
+
+    if ok and best is None:
+        best = N
+
+    print(N, round(q, 2), k, C,
+          round(si, 2), "Yes" if ok else "No")
+
+print("Smallest cluster size:", best)
